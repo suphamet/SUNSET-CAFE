@@ -8,11 +8,28 @@ export const fetchProducts = createAsyncThunk('product/fetchProducts',
   }
 );
 
+export const placeOrder = createAsyncThunk('product/placeOrder',
+  async (orderData) => {
+    const response = await axios.post('/api/Product/PlaceOrder', orderData);
+    return response.data;
+  }
+);
+
+export const fetchOrders = createAsyncThunk('product/fetchOrders',
+  async () => {
+    const response = await axios.get('/api/Product/GetGroupedOrders');
+    return response.data;
+  }
+);
+
+
 const productSlice = createSlice({
   name: 'product',
   initialState: {
     items: [],
+    orders: [], // Added for staff dashboard
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    orderStatus: 'idle',
     error: null,
   },
   reducers: {},
@@ -36,6 +53,17 @@ const productSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
+      })
+      .addCase(fetchOrders.pending, (state) => {
+        state.orderStatus = 'loading';
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.orderStatus = 'succeeded';
+        const orders = action.payload.responseObject || action.payload;
+        state.orders = Array.isArray(orders) ? orders : [];
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.orderStatus = 'failed';
       });
   },
 });

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Coffee, Award, Leaf } from "lucide-react"; // ติดตั้ง lucide-react ด้วยนะครับ
-import coffee1 from "../assets/Coffee/Coffee.jpg";
+import coffee1 from "../../assets/Coffee/Coffee.jpg";
 
 export default function Hero() {
     return (
@@ -9,10 +9,10 @@ export default function Hero() {
             <div className="absolute top-0 right-0 -z-10 w-1/3 h-full bg-orange-100/50 rounded-l-full blur-3xl" />
 
             <main className="max-w-6xl mx-auto px-8 pt-16 pb-24 flex flex-col md:flex-row items-center gap-16">
-                
+
                 {/* 1. Text Content */}
                 <div className="flex-1 space-y-8">
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6 }}
@@ -21,15 +21,15 @@ export default function Hero() {
                             Start Your Day With <br />
                             <span className="text-orange-800 relative">
                                 Freshly Brewed
-                                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none text-orange-200"><path d="M2 5.5C40 2 110 2 198 5.5" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
-                            </span> 
+                                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none text-orange-200"><path d="M2 5.5C40 2 110 2 198 5.5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
+                            </span>
                             {" "}Coffee
                         </h3>
                     </motion.div>
 
                     <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
-                        Selection of premium coffee beans from the best origins. 
-                        Carefully roasted for a perfect taste in every cup. 
+                        Selection of premium coffee beans from the best origins.
+                        Carefully roasted for a perfect taste in every cup.
                         Experience the world of coffee awaits in our shop.
                     </p>
 
@@ -59,7 +59,7 @@ export default function Hero() {
                 {/* 3. Image Section with Decoration */}
                 <div className="flex-1 relative">
                     {/* วงกลมตกแต่งด้านหลังรูป */}
-                    <motion.div 
+                    <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                         className="absolute -top-10 -right-10 w-32 h-32 border-4 border-dashed border-orange-200 rounded-full -z-10"
@@ -81,7 +81,7 @@ export default function Hero() {
                             className="w-full h-full object-cover rounded-[2rem]"
                         />
                         {/* ป้ายลอยขนาดเล็ก */}
-                        <motion.div 
+                        <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ duration: 1, repeat: Infinity }}
                             className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3"

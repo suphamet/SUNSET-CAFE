@@ -1,50 +1,100 @@
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import MenuSection from './components/MenuSection';
-import MenuModal from './components/MenuModal';
-import { useDispatch } from 'react-redux';
-import { fetchProducts } from '../redux/productSlice';
+import Hero from './components/main/Hero';
+import MenuSection from './components/main/MenuSection';
+import MenuModal from './components/main/MenuModal';
+import StaffDashboard from './components/dashboard/StaffDashboard';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import { useSelector } from 'react-redux';
+import { selectGroupedProducts } from '../redux/productSlice';
 
 function App() {
-  const dispatch = useDispatch();
+  const fullMenuData = useSelector(selectGroupedProducts);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cart, setCart] = useState([]);
+  const [userRole, setUserRole] = useState(null); // null | 'customer' | 'employee'
+  const [username, setUsername] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
+  // Load persistence
   useEffect(() => {
-      dispatch(fetchProducts());
-  }, [dispatch]);
+    const savedRole = localStorage.getItem("user_role");
+    const savedUsername = localStorage.getItem("user_name");
+    if (savedRole) setUserRole(savedRole);
+    if (savedUsername) setUsername(savedUsername);
 
-  // Load & Save Local Storage (ย้ายมาจาก Modal)
-  useEffect(() => {
     const savedCart = localStorage.getItem("coffee_cart");
-    if (savedCart) setCart(JSON.parse(savedCart));
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (e) {
+        console.error("Cart load error", e);
+      }
+    }
   }, []);
 
+  // Save Cart
   useEffect(() => {
-    localStorage.setItem("coffee_cart", JSON.stringify(cart));
+    if (cart.length > 0) {
+      localStorage.setItem("coffee_cart", JSON.stringify(cart));
+    }
   }, [cart]);
 
-  // คำนวณจำนวนชิ้นทั้งหมดเพื่อส่งให้ Navbar
+  const handleLogin = (role, name) => {
+    setUserRole(role);
+    if (name) {
+      setUsername(name);
+      localStorage.setItem("user_name", name);
+    }
+    localStorage.setItem("user_role", role);
+  };
+
+  const handleLogout = () => {
+    setUserRole(null);
+    setUsername('');
+    localStorage.removeItem("user_role");
+    localStorage.removeItem("user_name");
+  };
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const fullMenuData = {
-    Coffee: [
-      { id: 101, name: "Espresso", price: "60.-" },
-      { id: 102, name: "Americano", price: "70.-" },
-      { id: 103, name: "Latte", price: "80.-" },
-    ],
-    Dessert: [{ id: 201, name: "Croissant", price: "95.-" }],
-    Food: [{ id: 301, name: "Club Sandwich", price: "150.-" }]
-  };
+  // If not logged in or role not selected, show entry gate only
+  if (!userRole) {
+    if (isRegistering) {
+      return <Register onBackToLogin={() => setIsRegistering(false)} />;
+    }
+    return (
+      <Login
+        onLogin={(role, name) => handleLogin(role, name)}
+        onEnterAsCustomer={() => handleLogin('customer')}
+        onGoToRegister={() => setIsRegistering(true)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#faf7f2]">
-      {/* ส่ง totalItems ไปแสดงเลขที่ Navbar */}
-      <Navbar onOpenCart={() => setIsModalOpen(true)} totalItems={totalItems}/>
-      <Hero />
-      <MenuSection cart={cart} setCart={setCart} fullMenuData={fullMenuData}/>
+      <Navbar
+        onOpenCart={() => setIsModalOpen(true)}
+        totalItems={totalItems}
+        userRole={userRole}
+        username={username}
+        onLogout={handleLogout}
+      />
+
+      <main>
+        {userRole === 'customer' ? (
+          <>
+            <Hero />
+            <MenuSection cart={cart} setCart={setCart} onOpenModal={() => setIsModalOpen(true)} />
+          </>
+        ) : (
+          <StaffDashboard />
+        )}
+      </main>
+
       <MenuModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

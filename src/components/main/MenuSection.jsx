@@ -1,17 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import MenuModal from "./MenuModal";
-import { fetchProducts, selectGroupedProducts } from "../../redux/productSlice";
+import { fetchProducts } from "../../../redux/productSlice";
 
 // รับ Props มาจาก App.jsx
 export default function MenuSection({ cart, setCart, onOpenModal }) {
     const dispatch = useDispatch();
-    const { items: menus, status, error } = useSelector((state) => state.product);
-    const fullMenuData = useSelector((state) => selectGroupedProducts(state));
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { items, status, error } = useSelector((state) => state.product);
+    const menus = items.filter(item => item.isSignature === true);
 
-    console.log("menus", menus)
+    console.log("menus (signatures)", menus)
 
     useEffect(() => {
         if (status === 'idle') {
@@ -57,20 +55,11 @@ export default function MenuSection({ cart, setCart, onOpenModal }) {
             </div>
 
             <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={onOpenModal}
                 className="mt-12 bg-orange-800 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-900 transition-all block mx-auto shadow-lg"
             >
                 View Full Menu
             </button>
-
-            {/* ส่ง Props ทั้งหมดที่จำเป็นไปให้ MenuModal */}
-            <MenuModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                fullMenuData={fullMenuData}
-                cart={cart}
-                setCart={setCart}
-            />
         </section>
     );
 }
